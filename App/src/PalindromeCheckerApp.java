@@ -3,82 +3,65 @@ import java.util.Stack;
 import java.util.Deque;
 import java.util.ArrayDeque;
 
-interface PalindromeStrategy {
-    boolean checkPalindrome(String input);
-}
-
-class StackStrategy implements PalindromeStrategy {
-    public boolean checkPalindrome(String input) {
-        Stack<Character> stack = new Stack<>();
-        for (int i = 0; i < input.length(); i++) {
-            stack.push(input.charAt(i));
-        }
-        for (int i = 0; i < input.length(); i++) {
-            if (input.charAt(i) != stack.pop()) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-class DequeStrategy implements PalindromeStrategy {
-    public boolean checkPalindrome(String input) {
-        Deque<Character> deque = new ArrayDeque<>();
-        for (int i = 0; i < input.length(); i++) {
-            deque.addLast(input.charAt(i));
-        }
-        while (deque.size() > 1) {
-            if (!deque.removeFirst().equals(deque.removeLast())) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-class PalindromeContext {
-    private PalindromeStrategy strategy;
-
-    public PalindromeContext(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean executeStrategy(String input) {
-        return strategy.checkPalindrome(input);
-    }
-}
-
 public class PalindromeCheckerApp {
+
+    public static boolean twoPointer(String s) {
+        int left = 0;
+        int right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public static boolean stackMethod(String s) {
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) stack.push(s.charAt(i));
+        for (int i = 0; i < s.length(); i++) if (s.charAt(i) != stack.pop()) return false;
+        return true;
+    }
+
+    public static boolean dequeMethod(String s) {
+        Deque<Character> deque = new ArrayDeque<>();
+        for (int i = 0; i < s.length(); i++) deque.addLast(s.charAt(i));
+        while (deque.size() > 1) if (!deque.removeFirst().equals(deque.removeLast())) return false;
+        return true;
+    }
+
+    public static boolean recursiveMethod(String s, int left, int right) {
+        if (left >= right) return true;
+        if (s.charAt(left) != s.charAt(right)) return false;
+        return recursiveMethod(s, left + 1, right - 1);
+    }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter a string: ");
         String input = sc.nextLine();
 
-        System.out.println("Select algorithm: 1 - Stack, 2 - Deque");
-        int choice = sc.nextInt();
-        sc.nextLine();
+        long start, end;
 
-        PalindromeStrategy strategy = null;
+        start = System.nanoTime();
+        twoPointer(input);
+        end = System.nanoTime();
+        System.out.println("Two-pointer execution time: " + (end - start) + " ns");
 
-        switch (choice) {
-            case 1 -> strategy = new StackStrategy();
-            case 2 -> strategy = new DequeStrategy();
-            default -> {
-                System.out.println("Invalid choice.");
-                System.exit(0);
-            }
-        }
+        start = System.nanoTime();
+        stackMethod(input);
+        end = System.nanoTime();
+        System.out.println("Stack execution time: " + (end - start) + " ns");
 
-        PalindromeContext context = new PalindromeContext(strategy);
-        boolean isPalindrome = context.executeStrategy(input);
+        start = System.nanoTime();
+        dequeMethod(input);
+        end = System.nanoTime();
+        System.out.println("Deque execution time: " + (end - start) + " ns");
 
-        if (isPalindrome) {
-            System.out.println("The string is a palindrome.");
-        } else {
-            System.out.println("The string is not a palindrome.");
-        }
+        start = System.nanoTime();
+        recursiveMethod(input, 0, input.length() - 1);
+        end = System.nanoTime();
+        System.out.println("Recursive execution time: " + (end - start) + " ns");
 
         sc.close();
     }
