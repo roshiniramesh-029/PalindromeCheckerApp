@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class PalindromeCheckerApp{
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
@@ -8,7 +8,20 @@ public class PalindromeCheckerApp{
         System.out.print("Enter a string: ");
         String input = sc.nextLine();
 
-        boolean isPalindrome = checkPalindrome(input, 0, input.length() - 1);
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+
+        boolean isPalindrome = true;
+        int left = 0;
+        int right = normalized.length() - 1;
+
+        while (left < right) {
+            if (normalized.charAt(left) != normalized.charAt(right)) {
+                isPalindrome = false;
+                break;
+            }
+            left++;
+            right--;
+        }
 
         if (isPalindrome) {
             System.out.println("The string is a palindrome.");
@@ -17,18 +30,5 @@ public class PalindromeCheckerApp{
         }
 
         sc.close();
-    }
-
-    private static boolean checkPalindrome(String str, int left, int right) {
-
-        if (left >= right) {
-            return true;
-        }
-
-        if (str.charAt(left) != str.charAt(right)) {
-            return false;
-        }
-
-        return checkPalindrome(str, left + 1, right - 1);
     }
 }
